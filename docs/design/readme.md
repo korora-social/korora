@@ -94,7 +94,7 @@ On a technical level, huddles will probably work something like this:
         Neat!
 
     -   The `korora:Huddle` Actor's outbox should just be `Announce` activities of the original posts by the primary user Actor.
-        Ideally, this should mean that remove users browsing the huddle Actor should see the posts shared to that huddle. Again, TBD based on what happens in the real world.
+        Ideally, this should mean that remote users browsing the huddle Actor should see the posts shared to that huddle. Again, TBD based on what happens in the real world.
 
 -   A new `korora:boostable` attribute will be added to post activities that are meant to be displayed in a timeline.
     This attribute will specify if a post is meant to be shared by others.
