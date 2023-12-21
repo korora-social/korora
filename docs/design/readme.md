@@ -161,4 +161,6 @@ Korora's explicit non-goals for interoperability with Mastodon are:
 _Various design decisions that need to be made, but I don't have an answer for yet_.
 
 -   If you remove someone from all huddles, should that be considered an unfollow and softblock?
-    -   I'm leaning towards no, and they'll just go back into an "Uncategorized" huddle, and should still be able to see things posted to "everyone" or "public".
+    -   I'm leaning towards no, and they'll just go back into an "Unorganized" huddle, and should still be able to see things posted to "everyone" or "public".
+        This would make huddles more of an opt-in feature, so you could still uses Korora in the same way as other microblogging platforms.
+        It would also allow you to dip your toes into using huddles, start by creating just one huddle to use like Instagram's close friends, and then maybe start adding more as you find useful.
