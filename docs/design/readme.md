@@ -38,6 +38,36 @@ Where you might define your private huddles as above, you could define public hu
 -   "dog pictures", a huddle that's just a feed of pictures of your dog.
 -   "portfolio", a huddle for people who want to see just your artwork, but not your other posts.
 
+### Huddles and Announces/Boosts/Reblogs/Reposts
+
+Because boosts/reblogs/reposts/announces are a user expectation, and a feature I'd like to support, the Korora timeline needs some mechanism to easily enable them without a cumbersome user experience.
+
+Similar to the Twitter and Bluesky systems, hitting the boost icon will display a modal with several options.
+The options should be:
+
+-   "Boost or Reblog...", which opens a compose editor allowing you to specify which huddles to send the boost to, or add an additional, Tumblr-style reblog.
+-   "Boost to $HUDDLE_NAME", an option that should be repeated for each huddle the person you're boosting it from (or the person who boosted it to you) is in.
+
+Users should additionally have the ability to disable the "quick-boost" functionality, and just always be taken into the boost/reblog compose screen.
+
+### Organizing new relationships into Huddles
+
+When you follow someone, or they follow you, that relationship should be immediately placed into an "Unorganized Relationships" huddle.
+At a later point, you should be able to review your unorganized relationships, with a prompt to organize them into your huddles.
+
+The Korora UI should immediately prompt you to categorize users into huddles when you click the "Follow" button (or perhaps this should be replaced with "Add to huddles..."/"Manage Huddles").
+
+If your account is set to require approvals for follow requests, the approvals screen should prompt you to categorize newly approved followers into huddles.
+
+### Public Huddles
+
+You should be able to declare certain huddles as public, meaning other people are able to follow or unfollow that huddle at will.
+However, you should still be able to organize people who follow your user into those huddles, so that you don't need to have a second, private, huddle for the same purpose.
+
+Internally, Korora should note if someone is a follower of the public huddle, or a follower of your main user that you've also put in that huddle.
+Applications which understand the huddle paradigm should allow people who've been added to the "private" side of the huddle to remove themselves from that huddle, if they want.
+On a technical level, this should be achieved by the huddle's `Followers` collection being accessible (with security considerations, may just show subsets when requested) to someone who has been added to that huddle.
+To be removed from a public huddle, just send an Unfollow to that huddle's inbox.
 
 ### Huddles in ActivityPub
 
@@ -54,10 +84,19 @@ On a technical level, huddles will probably work something like this:
     -   A `Follow` activity will be sent to the huddle's inbox, if the huddle allows anyone to follow, an automatic `Accept` will be sent back, if not the owner will need to approve or deny the request.
 
     -   When a user `Create`s a new activity to a public huddle, the ideal situation would be the actual user Actor sends the new activity to everyone in a given huddle.
-        There's a question of if this will look like that user sending a DM to a given mastodon user, if this looks like direct messages Korora will need to instead send an `Announce` activity to the huddle Actor's followers list. Reading the code, it _looks_ like it shouldn't look like a DM or mention at all, though it does mean that the visibility is `Limited`, which may mean it shows up on a user's timeline on the remote instance? To be explored. Okay so it definitely _looks_ like it should only show up in the feeds of those in the `cc` or `to` field, and shouldn't show up on the public timeline. It also seems like `Limited` status posts aren't boostable in Mastodon? But I think that's fine and if this takes off we can add an extension to the activities that specifies if it's sharable. Neat!
+
+        There's a question of if this will look like that user sending a DM to a given mastodon user, if this looks like direct messages Korora will need to instead send an `Announce` activity to the huddle Actor's followers list.
+        Reading the code, it _looks_ like it shouldn't look like a DM or mention at all, though it does mean that the visibility is `Limited`, which may mean it shows up on a user's timeline on the remote instance? To be explored.
+        Okay so it definitely _looks_ like it should only show up in the feeds of those in the `cc` or `to` field, and shouldn't show up on the public timeline.
+        It also seems like `Limited` status posts aren't boostable in Mastodon? But I think that's fine and if this takes off we can add an extension to the activities that specifies if it's sharable.
+        Neat!
 
     -   The `korora:Huddle` Actor's outbox should just be `Announce` activities of the original posts by the primary user Actor.
         Ideally, this should mean that remove users browsing the huddle Actor should see the posts shared to that huddle. Again, TBD based on what happens in the real world.
+
+-   Korora will still need to keep track of the traditional Followers/Following paradigm, because while you may be following someone, they may not follow you.
+    This is because you may send a post to a huddle which includes people not following you or that huddle.
+    In this case, Korora may include them in `to` and `cc` for outboxes, but it should not deliver those users' inboxes.
 
 
 ## Minimum UI
@@ -69,6 +108,13 @@ As such, Korora's minimum UI will need to handle the following tasks:
 -   Account management
     -   Configure basic account information (bio, display name, etc)
     -   Ability to require approvals for followers
+-   Basic User Safety
+    -   Ability to run in a limited federation mode (allowlist instances)
+    -   Ability to block instances
+    -   Ability to block individual users (possibly a "Blocked" huddle?)
+    -   Ability to "softblock" users (remove them as a follower, but not fully block them; possibly just block + unblock actions)
+    -   Ability to limit DMs/mentions to everyone, no one, followers only, specific huddles, specific users
+        -   Similarly, an inverse ability, to block DMs/mentions from specific huddles or specific users
 -   Huddle management
     -   Create new Huddles, set huddle visibility, manage users in huddles
     -   Ability to require approvals for publicly visible huddle followers
