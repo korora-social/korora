@@ -154,3 +154,11 @@ Korora's explicit non-goals for interoperability with Mastodon are:
 
 -   Korora will not support the Mastodon API, or even a subset of it.
 -   Because of Korora's ideas around more limited access, Korora does not intend to figure out a hack to allow Mastodon users to boost posts sent to private huddles.
+
+
+## Outstanding questions
+
+_Various design decisions that need to be made, but I don't have an answer for yet_.
+
+-   If you remove someone from all huddles, should that be considered an unfollow and softblock?
+    -   I'm leaning towards no, and they'll just go back into an "Uncategorized" huddle, and should still be able to see things posted to "everyone" or "public".
