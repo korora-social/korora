@@ -78,6 +78,8 @@ On a technical level, huddles will probably work something like this:
 
     -   **Note** in reading the mastodon source, this may not be feasible, and the `cc` field may just need to be every user on a given instance (or if going to not a shared inbox, `cc` to just the user in question). I can't tell if Mastodon actually resolves collections other than the "magic" `followers` collection.
 
+    -   Posts sent to public huddles will have a `cc` of that huddle's `followers` list
+
 -   For backwards compatibility, public huddles (those which other people can subscribe to themselves, instead of being placed in manually by you) will be implemented as an Actor.
     Specifically, the actor's `@type` will be a `["as:Person", "korora:Huddle"]`, so that existing software should interpret it as a `Person`, but if other software implements the `korora` namespace it will be able to understand the distinction.
 
@@ -93,6 +95,12 @@ On a technical level, huddles will probably work something like this:
 
     -   The `korora:Huddle` Actor's outbox should just be `Announce` activities of the original posts by the primary user Actor.
         Ideally, this should mean that remove users browsing the huddle Actor should see the posts shared to that huddle. Again, TBD based on what happens in the real world.
+
+-   A new `korora:boostable` attribute will be added to post activities that are meant to be displayed in a timeline.
+    This attribute will specify if a post is meant to be shared by others.
+    The reason for making this an explicit attribute, instead of deriving it from other attributes into Mastodon's `visibility` attribute is to allow for other software to better interpret a post author's intent.
+    Because most Korora posts will be defined by Mastodon as `limited` visibility, Mastodon users won't be able to boost posts shared to different circles.
+    This is less than ideal because I may want to share something just to one huddle, but allow members of that huddle to further share the post.
 
 -   Korora will still need to keep track of the traditional Followers/Following paradigm, because while you may be following someone, they may not follow you.
     This is because you may send a post to a huddle which includes people not following you or that huddle.
@@ -120,6 +128,27 @@ As such, Korora's minimum UI will need to handle the following tasks:
     -   Ability to require approvals for publicly visible huddle followers
 -   Public profile and huddle views
 -   Timeline view for logged in users
+    -   Timeline of everything
+    -   Timelines for specific huddles
 -   Create post UI (with support for images and content warnings)
 
 As an aside, I'm intrigued by the idea of making Korora's backend ActivityPub only, and implementing the frontend as ActivityPub C2S, but I'm concerned that may be an additional level of effort on top of all of the rest of the app.
+
+
+## Mastodon Federation Compatibility
+
+Because Mastodon is the... mastodon of ActivityPub-based microblogging platforms, a certain level of federation compatibility is a desired end goal.
+
+Korora's explicit interoperability goals with Mastodon are:
+
+-   Posts sent to huddles are visible in members of that huddle's timeline
+-   Replies to posts in a huddle are properly federated outward to members of that huddle
+-   Korora users can follow and interact with Mastodon users
+-   Korora users who reply to a post from a Mastodon user can limit the reply's visibility to everyone/author only/author's followers/author's followers + specific huddles, and that limit works as intended
+-   Mastodon users should be able to subscribe to public huddles, and see posts sent to those huddles in their timelines
+-   Webfinger `acct:` support, even if you really shouldn't identify users by a webfinger `acct:` url.
+
+Korora's explicit non-goals for interoperability with Mastodon are:
+
+-   Korora will not support the Mastodon API, or even a subset of it.
+-   Because of Korora's ideas around more limited access, Korora does not intend to figure out a hack to allow Mastodon users to boost posts sent to private huddles.
