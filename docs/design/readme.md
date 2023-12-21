@@ -132,6 +132,8 @@ As such, Korora's minimum UI will need to handle the following tasks:
     -   Timelines for specific huddles
 -   Create post UI (with support for images and content warnings)
 
+The frontend should communicate with the backend entirely through a public API that other applications should be free to consume.
+
 As an aside, I'm intrigued by the idea of making Korora's backend ActivityPub only, and implementing the frontend as ActivityPub C2S, but I'm concerned that may be an additional level of effort on top of all of the rest of the app.
 
 
