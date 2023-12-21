@@ -1,0 +1,15 @@
+{
+  "@context": {
+    "as": "https://www.w3.org/ns/activitystreams#",
+    "korora": "https://___future korora domain___/ns#",
+    "Huddle": "korora:Huddle",
+    "huddleMembers": {
+      "@id": "korora:huddleMembers",
+      "@type": "as:OrderedCollection"
+    },
+    "boostable": {
+      "@id": "korora:boostable",
+      "@type": "xsd:boolean"
+    }
+  }
+}
