@@ -1,11 +1,12 @@
 package activitypub_test
 
 import (
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/korora-social/korora/dao/user"
+	"github.com/korora-social/korora/dao/daomocks"
 	"github.com/korora-social/korora/models"
 	"github.com/korora-social/korora/routes/activitypub"
 
@@ -16,7 +17,7 @@ import (
 var _ = Describe("User-specific routes", func() {
 	var (
 		router  chi.Router
-		userDao *user.MockDao = nil
+		userDao *daomocks.UserDao = nil
 	)
 
 	performRequest := func(req *http.Request) *http.Response {
@@ -26,7 +27,7 @@ var _ = Describe("User-specific routes", func() {
 	}
 
 	BeforeEach(func() {
-		userDao = &user.MockDao{
+		userDao = &daomocks.UserDao{
 			Users: []*models.User{
 				&models.User{
 					Username: "test1",
@@ -49,6 +50,20 @@ var _ = Describe("User-specific routes", func() {
 				req := httptest.NewRequest("GET", "/users/foob", nil)
 				resp := performRequest(req)
 				Expect(resp.StatusCode).To(Equal(404))
+			})
+		})
+
+		Context("With an existing user's path", func() {
+			It("Returns 200, with the user's activitypub representation", func() {
+				req := httptest.NewRequest("GET", "/users/test1", nil)
+				resp := performRequest(req)
+				Expect(resp.StatusCode).To(Equal(200))
+
+				unwrapped := map[string]interface{}{}
+				Expect(json.NewDecoder(resp.Body).Decode(&unwrapped)).To(Succeed())
+				Expect(unwrapped).To(HaveKey("@context"))
+				Expect(unwrapped).To(HaveKeyWithValue("type", "Person"))
+				Expect(unwrapped).To(HaveKeyWithValue("id", "https://foo.bar/ap/users/test1"))
 			})
 		})
 	})

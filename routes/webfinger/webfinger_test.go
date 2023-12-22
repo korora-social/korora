@@ -10,7 +10,7 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
-	"github.com/korora-social/korora/dao/user"
+	"github.com/korora-social/korora/dao/daomocks"
 	"github.com/korora-social/korora/models"
 )
 
@@ -21,10 +21,10 @@ func TestWebfinger(t *testing.T) {
 
 var _ = Describe("Webfinger", func() {
 	var router *webfinger.Route = nil
-	var userDao *user.MockDao = nil
+	var userDao *daomocks.UserDao = nil
 
 	BeforeEach(func() {
-		userDao = &user.MockDao{
+		userDao = &daomocks.UserDao{
 			Users: []*models.User{},
 		}
 		router = webfinger.New(userDao)

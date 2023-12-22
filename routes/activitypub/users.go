@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/korora-social/korora/dao"
+	serializer "github.com/korora-social/korora/models/activitypub"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -23,7 +24,7 @@ func (r *Route) GetUser(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	err = json.NewEncoder(rw).Encode(user.AsActivityPub())
+	err = json.NewEncoder(rw).Encode(serializer.User(user))
 	if err != nil {
 		log.WithError(err).Warn("Couldn't encode user to activity pub")
 		rw.WriteHeader(http.StatusInternalServerError)

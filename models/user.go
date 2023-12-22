@@ -43,11 +43,11 @@ func NewUser(username, baseUrl string) *User {
 	return user
 }
 
-func (u *User) PublicKeyPem() string {
-	return string(pem.EncodeToMemory(&pem.Block{
+func (u *User) PublicKeyPem() []byte {
+	return pem.EncodeToMemory(&pem.Block{
 		Type:  "RSA PUBLIC KEY",
 		Bytes: u.PublicKey,
-	}))
+	})
 }
 
 func (u *User) GetPrivateKey() *rsa.PrivateKey {
@@ -57,4 +57,11 @@ func (u *User) GetPrivateKey() *rsa.PrivateKey {
 	}
 
 	return key
+}
+
+// append path parts to a user's Uri
+func (user *User) Path(parts ...string) string {
+	u, _ := url.Parse(user.Uri)
+	u.Path = path.Join(append([]string{u.Path}, parts...)...)
+	return u.String()
 }

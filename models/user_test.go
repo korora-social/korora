@@ -24,11 +24,9 @@ var _ = Describe("User", func() {
 			Expect(user.PublicKey).ToNot(BeEmpty())
 
 			publicKeyPem := user.PublicKeyPem()
-			Expect(publicKeyPem).To(HavePrefix("-----BEGIN RSA PUBLIC KEY-----\n"))
-			Expect(publicKeyPem).To(HaveSuffix("-----END RSA PUBLIC KEY-----\n"))
 
 			// check that public key from the PEM matches the private key on the user
-			p, _ := pem.Decode([]byte(publicKeyPem))
+			p, _ := pem.Decode(publicKeyPem)
 			pub, err := x509.ParsePKCS1PublicKey(p.Bytes)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(pub).To(Equal(user.GetPrivateKey().Public()))

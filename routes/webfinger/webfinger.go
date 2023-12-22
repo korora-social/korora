@@ -60,7 +60,6 @@ func (wf *Route) Get(rw http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		log.WithError(err).WithFields(log.Fields{
 			"username": username,
-			"domain":   domain,
 		}).Warn("Webfinger lookup for non-existent user")
 
 		rw.WriteHeader(http.StatusNotFound)
