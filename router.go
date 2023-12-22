@@ -11,8 +11,8 @@ func (k *Korora) Router() http.Handler {
 	rtr := chi.NewRouter()
 
 	rtr.Route("/.well-known", func(r chi.Router) {
-		webfingerRoute := webfinger.New(k.usersDao)
-		r.Mount("webfinger", webfingerRoute)
+		wf := webfinger.New(k.usersDao)
+		wf.AddRoutes(rtr)
 	})
 
 	return rtr

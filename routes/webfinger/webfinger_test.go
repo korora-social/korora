@@ -2,7 +2,6 @@ package webfinger_test
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -17,30 +16,15 @@ import (
 
 func TestWebfinger(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "WebFinger Suite")
-}
-
-type mockUserDao struct {
-	user.Dao
-	Users []*models.User
-}
-
-func (u *mockUserDao) GetByWebfinger(username, domain string) (*models.User, error) {
-	for _, user := range u.Users {
-		if user.Username == username {
-			return user, nil
-		}
-	}
-
-	return nil, fmt.Errorf("No user found")
+	RunSpecs(t, "WebFinger Router Suite")
 }
 
 var _ = Describe("Webfinger", func() {
-	var router *webfinger.WebfingerRoute = nil
-	var userDao *mockUserDao = nil
+	var router *webfinger.Route = nil
+	var userDao *user.MockDao = nil
 
 	BeforeEach(func() {
-		userDao = &mockUserDao{
+		userDao = &user.MockDao{
 			Users: []*models.User{},
 		}
 		router = webfinger.New(userDao)
@@ -57,7 +41,7 @@ var _ = Describe("Webfinger", func() {
 
 		Context("Without any users in the database", func() {
 			It("Should return 404", func() {
-				router.ServeHTTP(respRecorder, request)
+				router.Get(respRecorder, request)
 
 				result := respRecorder.Result()
 				Expect(result.StatusCode).To(Equal(404))
@@ -73,7 +57,7 @@ var _ = Describe("Webfinger", func() {
 					},
 				}
 
-				router.ServeHTTP(respRecorder, request)
+				router.Get(respRecorder, request)
 
 				result := respRecorder.Result()
 				Expect(result.StatusCode).To(Equal(200))

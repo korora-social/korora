@@ -5,11 +5,12 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/korora-social/korora/dao/user"
 	log "github.com/sirupsen/logrus"
 )
 
-type WebfingerRoute struct {
+type Route struct {
 	users user.Dao
 }
 
@@ -24,17 +25,17 @@ type Link struct {
 	Href string `json:"href"`
 }
 
-func New(users user.Dao) *WebfingerRoute {
-	return &WebfingerRoute{
+func New(users user.Dao) *Route {
+	return &Route{
 		users: users,
 	}
 }
 
-func (wf *WebfingerRoute) Router() http.Handler {
-	return wf
+func (wf *Route) AddRoutes(rtr chi.Router) {
+	rtr.Get("/webfinger", wf.Get)
 }
 
-func (wf *WebfingerRoute) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
+func (wf *Route) Get(rw http.ResponseWriter, req *http.Request) {
 	query := req.URL.Query()
 
 	if !query.Has("resource") {
@@ -49,13 +50,13 @@ func (wf *WebfingerRoute) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	username, domain, hasAt := strings.Cut(userQuery, "@")
+	username, _, hasAt := strings.Cut(userQuery, "@")
 	if !hasAt {
 		rw.WriteHeader(http.StatusNotFound)
 		return
 	}
 
-	user, err := wf.users.GetByWebfinger(username, domain)
+	user, err := wf.users.GetByUsername(username)
 	if err != nil {
 		log.WithError(err).WithFields(log.Fields{
 			"username": username,
