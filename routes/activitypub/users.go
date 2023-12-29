@@ -12,7 +12,7 @@ import (
 
 func (r *Route) GetUser(rw http.ResponseWriter, req *http.Request) {
 	username := chi.URLParam(req, "username")
-	user, err := r.users.GetByUsername(username)
+	user, err := r.dao.User().GetByUsername(username)
 	if err != nil {
 		if err == dao.NotFound {
 			rw.WriteHeader(http.StatusNotFound)

@@ -17,6 +17,7 @@ import (
 var _ = Describe("User-specific routes", func() {
 	var (
 		router  chi.Router
+		mockDao *daomocks.MockDao = nil
 		userDao *daomocks.UserDao = nil
 	)
 
@@ -39,7 +40,9 @@ var _ = Describe("User-specific routes", func() {
 				},
 			},
 		}
-		apRoute := activitypub.New(userDao)
+		mockDao = &daomocks.MockDao{UserDao: userDao}
+
+		apRoute := activitypub.New(mockDao)
 		router = chi.NewRouter()
 		router.Route("/", apRoute.Routes)
 	})

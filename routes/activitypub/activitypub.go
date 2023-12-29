@@ -2,16 +2,16 @@ package activitypub
 
 import (
 	"github.com/go-chi/chi/v5"
-	"github.com/korora-social/korora/dao/user"
+	"github.com/korora-social/korora/dao"
 )
 
 type Route struct {
-	users user.Dao
+	dao dao.Dao
 }
 
-func New(users user.Dao) *Route {
+func New(dao dao.Dao) *Route {
 	return &Route{
-		users: users,
+		dao: dao,
 	}
 }
 
