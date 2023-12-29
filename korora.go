@@ -1,9 +1,9 @@
 package korora
 
 import (
-	"github.com/korora-social/korora/dao/user"
+	"github.com/korora-social/korora/dao"
 )
 
 type Korora struct {
-	usersDao user.Dao
+	dao dao.Dao
 }
