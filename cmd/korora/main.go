@@ -1,14 +1,32 @@
 package main
 
+import (
+	"net/http"
+	"os"
+
+	"github.com/korora-social/korora"
+
+	sq "github.com/sleepdeprecation/squirrelly"
+	_ "modernc.org/sqlite"
+)
+
 func main() {
-	// sqldb, err := sql.Open(sqliteshim.ShimName, "db/test.sqlite")
-	// if err != nil {
-	// 	panic(err)
-	// }
+	db, err := sq.Open("sqlite", "db/test.sqlite")
+	if err != nil {
+		panic(err)
+	}
 
-	// db := bun.NewDB(sqldb, sqlitedialect.New())
-	// migrations.RunMigrations(db)
+	// janky migration -- just run a single sql file because i don't want to figure out a migrations system yet
+	rawSchema, err := os.ReadFile("db/schema.sql")
+	if err != nil {
+		panic(err)
+	}
 
-	// k := korora.New(db)
-	// http.ListenAndServe(":8800", k.Router())
+	_, err = db.DB.Exec(string(rawSchema))
+	if err != nil {
+		panic(err)
+	}
+
+	k := korora.New(db)
+	http.ListenAndServe(":8800", k.Router())
 }
