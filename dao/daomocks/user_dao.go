@@ -1,7 +1,7 @@
 package daomocks
 
 import (
-	"github.com/korora-social/korora/dao"
+	"github.com/korora-social/korora/dao/daoerrors"
 	"github.com/korora-social/korora/dao/user"
 	"github.com/korora-social/korora/models"
 )
@@ -18,5 +18,10 @@ func (m *UserDao) GetByUsername(username string) (*models.User, error) {
 		}
 	}
 
-	return nil, dao.NotFound
+	return nil, daoerrors.NotFound
+}
+
+func (m *UserDao) Save(u *models.User) error {
+	m.Users = append(m.Users, u)
+	return nil
 }

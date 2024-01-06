@@ -13,7 +13,7 @@ func (k *Korora) Router() http.Handler {
 
 	rtr.Route("/.well-known", func(r chi.Router) {
 		wf := webfinger.New(k.dao.User())
-		wf.AddRoutes(rtr)
+		wf.AddRoutes(r)
 	})
 
 	apRoute := activitypub.New(k.dao)

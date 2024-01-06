@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/korora-social/korora/dao"
+	"github.com/korora-social/korora/dao/daoerrors"
 	serializer "github.com/korora-social/korora/models/activitypub"
 	log "github.com/sirupsen/logrus"
 )
@@ -14,7 +14,7 @@ func (r *Route) GetUser(rw http.ResponseWriter, req *http.Request) {
 	username := chi.URLParam(req, "username")
 	user, err := r.dao.User().GetByUsername(username)
 	if err != nil {
-		if err == dao.NotFound {
+		if err == daoerrors.NotFound {
 			rw.WriteHeader(http.StatusNotFound)
 			return
 		}

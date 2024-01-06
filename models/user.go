@@ -5,6 +5,7 @@ import (
 	"crypto/rsa"
 	"crypto/x509"
 	"encoding/pem"
+	"errors"
 	"net/url"
 	"path"
 )
@@ -14,12 +15,16 @@ const (
 	UserBasePath string = "ap/users"
 )
 
-type User struct {
-	Username string
-	Uri      string
+var (
+	ErrKeyPresent error = errors.New("Key pair already set")
+)
 
-	PrivateKey []byte
-	PublicKey  []byte
+type User struct {
+	Username string `sq:"username"`
+	Uri      string `sq:"uri"`
+
+	PrivateKey []byte `sq:"private_key"`
+	PublicKey  []byte `sq:"public_key"`
 }
 
 func NewUser(username, baseUrl string) *User {
@@ -31,16 +36,26 @@ func NewUser(username, baseUrl string) *User {
 		Uri:      url.String(),
 	}
 
+	user.GenerateKeys()
+
+	return user
+}
+
+func (u *User) GenerateKeys() error {
+	if len(u.PrivateKey) > 0 {
+		return ErrKeyPresent
+	}
+
 	// create user's public and private keys
 	key, err := rsa.GenerateKey(rand.Reader, UserKeyBits)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
-	user.PrivateKey = x509.MarshalPKCS1PrivateKey(key)
-	user.PublicKey = x509.MarshalPKCS1PublicKey(key.Public().(*rsa.PublicKey))
+	u.PrivateKey = x509.MarshalPKCS1PrivateKey(key)
+	u.PublicKey = x509.MarshalPKCS1PublicKey(key.Public().(*rsa.PublicKey))
 
-	return user
+	return nil
 }
 
 func (u *User) PublicKeyPem() []byte {

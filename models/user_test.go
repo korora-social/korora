@@ -32,4 +32,24 @@ var _ = Describe("User", func() {
 			Expect(pub).To(Equal(user.GetPrivateKey().Public()))
 		})
 	})
+
+	Describe("GenerateKeys", func() {
+		It("Generates a key pair for the user", func() {
+			user := &models.User{}
+			Expect(user.PrivateKey).To(BeEmpty())
+
+			Expect(user.GenerateKeys()).To(Succeed())
+			Expect(user.PrivateKey).ToNot(BeEmpty())
+		})
+
+		It("Doesn't let you regenerate the keys", func() {
+			user := &models.User{}
+			Expect(user.GenerateKeys()).To(Succeed())
+
+			origPriv := user.PrivateKey
+
+			Expect(user.GenerateKeys()).ToNot(Succeed())
+			Expect(user.PrivateKey).To(Equal(origPriv))
+		})
+	})
 })

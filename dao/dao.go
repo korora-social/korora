@@ -2,14 +2,8 @@
 package dao
 
 import (
-	"errors"
-
 	"github.com/korora-social/korora/dao/user"
-	"github.com/uptrace/bun"
-)
-
-var (
-	NotFound error = errors.New("Record not found")
+	sq "github.com/sleepdeprecation/squirrelly"
 )
 
 type Dao interface {
@@ -17,11 +11,11 @@ type Dao interface {
 }
 
 type dao struct {
-	db      *bun.DB
+	db      *sq.Db
 	userDao user.Dao
 }
 
-func New(db *bun.DB) Dao {
+func New(db *sq.Db) Dao {
 	return &dao{
 		db:      db,
 		userDao: user.New(db),
